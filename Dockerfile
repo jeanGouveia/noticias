@@ -2,23 +2,23 @@ FROM php:8.2-cli
 
 WORKDIR /var/www/html
 
-# INSTALA DEPENDÊNCIAS + DRIVERS
+# Instala dependências
 RUN apt-get update && apt-get install -y \
     libpng-dev libjpeg-dev libfreetype6-dev \
-    zip git unzip curl \
+    zip git curl unzip \
     libonig-dev libxml2-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo_mysql gd mbstring xml \
+    && docker-php-ext-enable pdo_mysql \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 COPY . .
 
-# Instala dependências
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# STORAGE
+# Storage
 RUN mkdir -p \
     storage/logs \
     storage/framework/cache \
@@ -28,8 +28,8 @@ RUN mkdir -p \
     && chown -R root:root storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# MIGRAÇÕES
-RUN php artisan migrate --force || echo "Migrações falharam (DB não pronto)"
+# Migrações
+RUN php artisan migrate --force || echo "Migrações falharam"
 
-# Start
-CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=$PORT"]
+# CMD (opcional, será sobrescrito pelo railway.toml)
+CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"]
