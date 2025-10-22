@@ -2,7 +2,6 @@ FROM php:8.2-cli
 
 WORKDIR /var/www/html
 
-# Instala dependências
 RUN apt-get update && apt-get install -y \
     libpng-dev libjpeg-dev libfreetype6-dev \
     zip git curl unzip \
@@ -18,7 +17,6 @@ COPY . .
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Storage
 RUN mkdir -p \
     storage/logs \
     storage/framework/cache \
@@ -28,8 +26,7 @@ RUN mkdir -p \
     && chown -R root:root storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Migrações
 RUN php artisan migrate --force || echo "Migrações falharam"
 
-# CMD (opcional, será sobrescrito pelo railway.toml)
+# CMD com $PORT expandido corretamente
 CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"]
