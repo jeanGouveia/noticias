@@ -1,0 +1,55 @@
+*.log
+.DS_Store
+.env
+.env.backup
+.phpactor.json
+.phpunit.result.cache
+/.fleet
+/.idea
+/.nova
+/.phpunit.cache
+/.vscode
+/.zed
+/auth.json
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/vendor
+Homestead.json
+Homestead.yaml
+Thumbs.db
+# === Laravel + Docker + Railway ===
+/bootstrap/cache/*.php
+/storage/framework/cache/data/*.php
+/storage/framework/sessions/*.php
+/storage/framework/views/*.php
+/storage/logs/*.log
+
+# === Docker (se usar localmente) ===
+docker-compose.override.yml
+.docker
+
+# === Railway (evita arquivos de build locais) ===
+/public/mix-manifest.json
+/public/*.html
+
+# === Vite / Node (extras) ===
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# === IDEs extras (opcional) ===
+/.vscode/settings.json
+/.idea/*.iml
+/.idea/modules.xml
+/.idea/vcs.xml
+/.idea/workspace.xml
+
+# === Outros ===
+*.swp
+*.swo
+*~

@@ -1,0 +1,53 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      mysql:
+        condition: service_healthy
+    command: >
+      bash -c "
+      echo 'Iniciando Laravel...' &&
+
+      [ -f .env ] || (echo 'Copiando .env.example para .env...' && cp .env.example .env) &&
+
+      [ -d vendor ] || (
+        echo 'Instalando dependências do Composer...' &&
+        composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+      ) &&
+
+      echo 'Gerando chave da aplicação...' &&
+      php artisan key:generate --force &&
+
+      echo 'Executando migrações...' &&
+      php artisan migrate --force &&
+
+      echo 'Cacheando configurações...' &&
+      php artisan config:cache &&
+      php artisan route:cache &&
+      php artisan view:cache &&
+
+      echo 'Servidor Laravel rodando em http://localhost:8000' &&
+      php artisan serve --host=0.0.0.0 --port=8000
+      "
+
+  mysql:
+    image: mysql:8
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: noticias
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      timeout: 20s
+      retries: 10
+
+volumes:
+  db_data:
