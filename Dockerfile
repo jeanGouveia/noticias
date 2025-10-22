@@ -16,14 +16,14 @@ COPY . .
 # Instala dependências
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# CRIA STORAGE E DÁ PERMISSÃO
+# CRIA STORAGE COM PERMISSÃO ROOT
 RUN mkdir -p \
     storage/logs \
     storage/framework/cache \
     storage/framework/sessions \
     storage/framework/views \
     bootstrap/cache \
-    && chown -R www-data:www-data storage bootstrap/cache \
+    && chown -R root:root storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
 # MIGRAÇÕES AUTOMÁTICAS
