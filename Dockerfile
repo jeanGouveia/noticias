@@ -29,4 +29,4 @@ RUN mkdir -p \
 RUN php artisan migrate --force || echo "Migrações falharam"
 
 # CMD com $PORT expandido corretamente
-CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"]
+CMD ["sh", "-c", "mkdir -p storage/logs && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"]
