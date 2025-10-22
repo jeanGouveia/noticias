@@ -2,11 +2,13 @@ FROM php:8.2-cli
 
 WORKDIR /var/www/html
 
-# Instala dependências
+# INSTALA DEPENDÊNCIAS + DRIVERS
 RUN apt-get update && apt-get install -y \
-    libpng-dev libjpeg-dev libfreetype6-dev zip git unzip curl \
+    libpng-dev libjpeg-dev libfreetype6-dev \
+    zip git unzip curl \
+    libonig-dev libxml2-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql gd \
+    && docker-php-ext-install pdo_mysql gd mbstring xml \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -16,7 +18,7 @@ COPY . .
 # Instala dependências
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# CRIA STORAGE COM PERMISSÃO ROOT
+# STORAGE
 RUN mkdir -p \
     storage/logs \
     storage/framework/cache \
@@ -26,8 +28,8 @@ RUN mkdir -p \
     && chown -R root:root storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# MIGRAÇÕES AUTOMÁTICAS
-RUN php artisan migrate --force || echo "Migrações falharam, mas continuando..."
+# MIGRAÇÕES
+RUN php artisan migrate --force || echo "Migrações falharam (DB não pronto)"
 
-# Start com $PORT
+# Start
 CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=$PORT"]
