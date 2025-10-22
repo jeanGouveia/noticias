@@ -16,19 +16,18 @@ COPY . .
 # Instala dependências
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Cria diretórios de storage
-RUN mkdir -p storage/logs \
+# CRIA STORAGE E DÁ PERMISSÃO
+RUN mkdir -p \
+    storage/logs \
     storage/framework/cache \
     storage/framework/sessions \
     storage/framework/views \
-    && chown -R www-data:www-data storage \
-    && chmod -R 775 storage
+    bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
-# Permissões gerais
-RUN chown -R www-data:www-data /var/www/html
+# MIGRAÇÕES AUTOMÁTICAS
+RUN php artisan migrate --force || echo "Migrações falharam, mas continuando..."
 
-# MIGRAÇÕES AUTOMÁTICAS (opcional, mas recomendado)
-RUN php artisan migrate --force || true
-
-# Start com $PORT do Railway
+# Start com $PORT
 CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=$PORT"]
