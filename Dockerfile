@@ -2,7 +2,6 @@ FROM php:8.2-cli
 
 WORKDIR /var/www/html
 
-# Instala dependências
 RUN apt-get update && apt-get install -y \
     libpng-dev libjpeg-dev libfreetype6-dev \
     zip git curl unzip \
@@ -20,8 +19,7 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Cria storage com permissão total
 RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views \
-    && chmod -R 777 storage \
-    && chown -R root:root storage || true
+    && chmod -R 777 storage
 
-# CMD: cria logs, migrações e inicia
-CMD ["sh", "-c", "mkdir -p storage/logs && chmod 777 storage/logs && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"]
+# CMD: só inicia o servidor
+CMD ["sh", "-c", "mkdir -p storage/logs && chmod 777 storage/logs && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"]
