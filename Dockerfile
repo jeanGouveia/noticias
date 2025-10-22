@@ -1,9 +1,8 @@
-# Mude de php:8.2-fpm para php:8.2-cli
 FROM php:8.2-cli
 
 WORKDIR /var/www/html
 
-# Instala dependências
+# Instala dependências do sistema
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
@@ -19,14 +18,17 @@ RUN apt-get update && apt-get install -y \
 # Copia Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copia código
+# Copia o código
 COPY . .
+
+# === INSTALA DEPENDÊNCIAS DO COMPOSER ===
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Permissões
 RUN chown -R www-data:www-data /var/www/html
 
-# Expõe porta (opcional)
+# Expõe porta
 EXPOSE 8000
 
-# Start command: usa $PORT do Railway
+# Start com $PORT do Railway
 CMD php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
