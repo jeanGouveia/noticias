@@ -22,4 +22,4 @@ RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions sto
     && chmod -R 777 storage
 
 # CMD: só inicia o servidor
-CMD ["sh", "-c", "mkdir -p storage/logs && chmod 777 storage/logs && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"]
+CMD ["sh", "-c", "sleep 60 && mkdir -p storage/logs && chmod 777 storage/logs && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"]
